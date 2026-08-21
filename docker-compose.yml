@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: writeoff-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: poster_bot
+      POSTGRES_PASSWORD: secret_password
+      POSTGRES_DB: writeoff
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: writeoff-redis
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+
+  bot:
+    build: .
+    container_name: writeoff-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      WEB_HOST: "0.0.0.0"
+      DB_URL: "postgresql+asyncpg://poster_bot:secret_password@db:5432/writeoff"
+      REDIS_URL: "redis://redis:6379/0"
+    ports:
+      - "127.0.0.1:8081:8081"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./data:/app/data

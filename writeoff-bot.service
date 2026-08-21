@@ -1,0 +1,15 @@
+[Unit]
+Description=Poster Write-off Bot
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/writeoff_bot
+ExecStart=/root/writeoff_bot/.venv/bin/python main.py
+Restart=always
+RestartSec=5
+EnvironmentFile=/root/writeoff_bot/.env
+
+[Install]
+WantedBy=multi-user.target
